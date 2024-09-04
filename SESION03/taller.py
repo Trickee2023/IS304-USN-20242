@@ -123,7 +123,7 @@ def main():
             numero = input("Número de cuenta: ")
             if numero in cuentas:
                 monto = float(input("Monto a retirar: "))
-                cuentas[numero].retirar
+                cuentas[numero].retirar(monto)  # Corregido aquí
             else:
                 print("Número de cuenta no encontrado.")
         
@@ -133,8 +133,8 @@ def main():
             if numero_origen in cuentas and numero_destino in cuentas:
                 monto = float(input("Monto a transferir: "))
                 cuentas[numero_origen].transferencia(monto, cuentas[numero_destino])
-            else:(monto)
-                print("Número de cuenta origen o destino no encontrado.")
+            else:
+                print("Número de cuenta origen o destino no encontrado.")  # Corregido aquí
         
         elif opcion == '5':
             print("Saliendo del programa...")
@@ -145,3 +145,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
