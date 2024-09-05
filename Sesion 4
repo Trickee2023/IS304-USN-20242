@@ -1,1 +1,130 @@
+from datetime import datetime
+
+class CuentaBancaria:
+    def __init__(self, numeroCta="", nombreCliente="", saldoCta=0.0, fechaApertura=None):
+        if fechaApertura is None:
+            fechaApertura = datetime.now()
+        self._numeroCta = numeroCta
+        self._nombreCliente = nombreCliente
+        self._saldoCta = saldoCta
+        self._fechaApertura = fechaApertura
+        self._ultimoRetiro = None
+        self._ultimaConsignacion = None
+
+    def set(self, numeroCta, nombreCliente, saldoCta, fechaApertura=None):
+        self._numeroCta = numeroCta
+        self._nombreCliente = nombreCliente
+        self._saldoCta = saldoCta
+        if fechaApertura is None:
+            self._fechaApertura = datetime.now()
+        else:
+            self._fechaApertura = fechaApertura
+
+    def set_numeroCta(self, numeroCta):
+        self._numeroCta = numeroCta
+
+    def set_nombreCliente(self, nombreCliente):
+        self._nombreCliente = nombreCliente
+
+    def set_saldoCta(self, saldoCta):
+        if saldoCta < 0:
+            self._saldoCta = 0
+        else:
+            self._saldoCta = saldoCta
+
+    def set_fechaApertura(self, fechaApertura):
+        self._fechaApertura = fechaApertura
+
+    def get_numeroCta(self):
+        return self._numeroCta
+
+    def get_nombreCliente(self):
+        return self._nombreCliente
+
+    def get_saldoCta(self):
+        return self._saldoCta
+
+    def get_fechaApertura(self):
+        return self._fechaApertura
+
+    def get_ultimoRetiro(self):
+        return self._ultimoRetiro
+
+    def get_ultimaConsignacion(self):
+        return self._ultimaConsignacion
+
+    def consignar(self, monto):
+        if monto > 0:
+            self._saldoCta += monto
+            self._ultimaConsignacion = datetime.now()
+            print(f"Consignación exitosa. Nuevo saldo: {self._saldoCta}")
+        else:
+            print("El monto debe ser mayor a cero.")
+
+    def retirar(self, monto):
+        if monto > 0:
+            if self._saldoCta >= monto:
+                self._saldoCta -= monto
+                self._ultimoRetiro = datetime.now()
+                print(f"Retiro exitoso. Nuevo saldo: {self._saldoCta}")
+            else:
+                print("Saldo insuficiente.")
+        else:
+            print("El monto debe ser mayor a cero.")
+
+    def transferencia(self, monto, cuenta_destino):
+        if monto > 0:
+            if self._saldoCta >= monto:
+                self.retirar(monto)
+                cuenta_destino.consignar(monto)
+                print(f"Transferencia exitosa a la cuenta {cuenta_destino.get_numeroCta()}.")
+            else:
+                print("Saldo insuficiente para la transferencia.")
+        else:
+            print("El monto debe ser mayor a cero.")
+
+class CuentaAhorros(CuentaBancaria):
+    def __init__(self, numeroCta="", nombreCliente="", saldoCta=0.0, fechaApertura=None, tasaInteres=0.02):
+        super().__init__(numeroCta, nombreCliente, saldoCta, fechaApertura)
+        self._tasaInteres = tasaInteres
+
+    def aplicar_interes(self):
+        interes = self.get_saldoCta() * self._tasaInteres
+        self.consignar(interes)
+        print(f"Interés aplicado. Nuevo saldo: {self.get_saldoCta()}")
+
+    def set_tasaInteres(self, tasaInteres):
+        if tasaInteres >= 0:
+            self._tasaInteres = tasaInteres
+        else:
+            print("La tasa de interés debe ser mayor o igual a cero.")
+
+    def get_tasaInteres(self):
+        return self._tasaInteres
+
+class CuentaCorriente(CuentaBancaria):
+    def __init__(self, numeroCta="", nombreCliente="", saldoCta=0.0, fechaApertura=None, limiteSobregiro=0.0):
+        super().__init__(numeroCta, nombreCliente, saldoCta, fechaApertura)
+        self._limiteSobregiro = limiteSobregiro
+
+    def retirar(self, monto):
+        if monto > 0:
+            if self.get_saldoCta() + self._limiteSobregiro >= monto:
+                self._saldoCta -= monto
+                self._ultimoRetiro = datetime.now()
+                print(f"Retiro exitoso. Nuevo saldo: {self.get_saldoCta()}")
+            else:
+                print("Saldo insuficiente, incluso con el límite de sobregiro.")
+        else:
+            print("El monto debe ser mayor a cero.")
+
+    def set_limiteSobregiro(self, limiteSobregiro):
+        if limiteSobregiro >= 0:
+            self._limiteSobregiro = limiteSobregiro
+        else:
+            print("El límite de sobregiro debe ser mayor o igual a cero.")
+
+    def get_limiteSobregiro(self):
+        return self._limiteSobregiro
+
 
